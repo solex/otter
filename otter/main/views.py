@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
 from django_odesk.core.clients import RequestClient
 
-from otter.main.models import Team, Message
+from otter.main.models import User, Team, Message
 from otter.main.forms import MessageForm
 
 @login_required
@@ -26,7 +26,18 @@ def timeline(request, user_id=None, team_id=None):
                                    to_user__isnull = True, 
                                    to_team__isnull=True)
     elif team_id:
-        pass
+        client = RequestClient(request)
+        teamrooms = {}
+        for item in client.team.get_teamrooms(): #TODO: Session or cache?
+            teamrooms[item['id']] = item
+        if team_id not in teamrooms:
+            return HttpResponse('FORBIDDEN')
+        team_data = teamrooms[team_id]
+        title = "%(company_name)s > %(name)s" % team_data
+        team, created = Team.objects.get_or_create(name = team_data['id'], 
+                                        defaults = {'title': title})
+        timeline = timeline.filter(to_team = team)
+
         
     
     if request.method == 'POST':
@@ -40,6 +51,41 @@ def timeline(request, user_id=None, team_id=None):
         form = MessageForm()
 
     return {'form': form, 'timeline': timeline}
+
+def post(request):
+    pass
+
+
+@login_required
+@render_to('main/teams.html')
+def teams(request):
+    client = RequestClient(request)
+    teamrooms = client.team.get_teamrooms()
+    return {'teamrooms': teamrooms}
+
+
+@login_required
+@render_to('main/colleagues.html')
+def colleagues(request):
+    client = RequestClient(request)
+    #TODO: HR2 get_team_users doesn't seem to work
+    teamrooms = client.team.get_teamrooms()
+    clgs = []
+    for team in teamrooms:
+        for snapshot in client.team.get_snapshots(team['id'], online="all"):
+            username = snapshot['user']['mail']
+            data = {
+                'first_name': snapshot['user']['first_name'],
+                'last_name': snapshot['user']['last_name'],
+                'email': snapshot['user']['last_name'],
+            }
+            col, created = User.objects.get_or_create(username = username, 
+                                                      defaults = data)
+            if not col in clgs:
+                clgs.append(col)
+            #if not snapshot['user_id'] in clgs:
+            #    clgs[snapshot['user_id']] = snapshot
+    return {'colleagues': clgs}
 
 
 @login_required

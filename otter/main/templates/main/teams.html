@@ -1,0 +1,12 @@
+{% extends "main/base.html" %}
+
+{% block body %}
+    
+    <h2>Your teams</h2>
+    <ul>
+    {% for team in teamrooms %}
+        <li><a href="{% url team_timeline team.id %}">{{ team.company_name }} > {{ team.name }}</a></li>
+    {% endfor %}
+    </ul>
+
+{% endblock %}

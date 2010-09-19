@@ -7,19 +7,22 @@ class User(BaseUser):
     class Meta:
         proxy = True
 
+    def __unicode__(self):
+        return "%s %s" % (self.first_name, self.last_name)
+
     @property
     def odesk_id(self):
         return self.username.split('@')[0]
 
-    def public_messages(self):
-        return self.messages_sent.filter(to_user__isnull = True, 
-                                         to_team__isnull = True)
 
 class Team(models.Model):
     
     title = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     users = models.ManyToManyField(User)
+
+    def __unicode__(self):
+        return self.title
 
 #TODO: Task
 

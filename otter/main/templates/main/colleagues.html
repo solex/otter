@@ -1,0 +1,12 @@
+{% extends "main/base.html" %}
+
+{% block body %}
+    
+    <h2>Your colleagues</h2>
+    <ul>
+    {% for col  in colleagues %}
+        <li><a href="{% url user_timeline col.odesk_id %}">{{ col }}</a></li>
+    {% endfor %}
+    </ul>
+
+{% endblock %}
