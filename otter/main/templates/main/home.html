@@ -1,9 +1,17 @@
 {% extends "main/base.html" %}
 
 {% block body %}
+    
+    <h2>Your teams</h2>
+    <ul>
+    {% for team in user.team_set.all %}
+        <li><a href="{% url team_timeline team.name %}">{{ team.title }}</a></li>
+    {% endfor %}
+    </ul>
+
     <p>Welcome!</p>
 
-    {% for message in user.public_messages %}
+    {% for message in timeline %}
     <div class="message">
         {{ message.text }}
     </div>

@@ -15,6 +15,11 @@ urlpatterns = patterns('',
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     (r'^$', 'otter.main.views.home'),
+    url(r'^teams/(?P<team_id>[\w\:]+)/$', 'otter.main.views.timeline',
+        name='team_timeline'),
+    url(r'^users/(?P<user_id>\w+)/$', 'otter.main.views.timeline',
+        name='user_timeline'),
+    (r'^sync/$', 'otter.main.views.sync'),
 
 )
 
