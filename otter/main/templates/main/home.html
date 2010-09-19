@@ -1,0 +1,17 @@
+{% extends "main/base.html" %}
+
+{% block body %}
+    <p>Welcome!</p>
+
+    {% for message in user.public_messages %}
+    <div class="message">
+        {{ message.text }}
+    </div>
+    {% endfor %}
+
+    <form action="" method="post">
+        {{ form.as_p }}
+        <button type="submit">Send</button>
+        {% csrf_token %}
+    </form>
+{% endblock %}

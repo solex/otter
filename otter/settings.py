@@ -97,12 +97,14 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
+    'otter.main',
 )
 
 AUTHENTICATION_BACKENDS = (
     'django_odesk.auth.backends.ModelBackend',
 )
 
+ODESK_CUSTOM_USER_MODEL = 'main.User'
 AUTH_PROFILE_MODULE = 'main.UserProfile'
 
 try:

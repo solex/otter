@@ -7,11 +7,15 @@ admin.autodiscover()
 urlpatterns = patterns('',
 
     (r'^auth/', include('django_odesk.auth.urls')),
+    (r'^accounts/$', 'django.contrib.auth.views.login'),
+    (r'^accounts/login/$', 'django.contrib.auth.views.login'),
+    (r'^accounts/logout/$', 'django.contrib.auth.views.logout'),
 
     (r'^admin/', include(admin.site.urls)),
+    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    (r'^$', 'otter.main.views.home'),
+
 )
 
 if settings.SERVE_STATIC_FILES:
