@@ -1,0 +1,20 @@
+{% extends "main/base.html" %}
+
+{% block body %}
+    
+    <h2>{{ team.title }}</h2>
+
+    {% for message in timeline %}
+    <div class="message">
+        {{ message.timestamp|date:"H:m" }} {{ message.sender }} / {{ message.text }}
+    </div>
+    {% endfor %}
+
+    <form action="{% url post %}" method="post">
+        {{ form.text }}
+        <input type="hidden" name="team_name" value="{{ team.name }}"/>
+        <input type="hidden" name="redirect" value="{{ url }}"/>
+        <button type="submit">Send</button>
+        {% csrf_token %}
+    </form>
+{% endblock %}

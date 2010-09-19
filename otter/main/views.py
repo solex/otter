@@ -8,16 +8,8 @@ from django_odesk.core.clients import RequestClient
 from otter.main.models import User, Team, Message
 from otter.main.forms import MessageForm
 
-@login_required
-@render_to('main/home.html')
-def home(request):
-    return HttpResponseRedirect(reverse('user_timeline',
-                                        args=[request.user.odesk_id])) 
 
-@login_required
-@render_to('main/home.html')
-def timeline(request, user_id=None, team_id=None):
-    
+def get_timeline(request, team_id=None, user_id=None, private=None):
     timeline = Message.objects.all()
 
     if user_id:
@@ -37,8 +29,23 @@ def timeline(request, user_id=None, team_id=None):
         team, created = Team.objects.get_or_create(name = team_data['id'], 
                                         defaults = {'title': title})
         timeline = timeline.filter(to_team = team)
+        return team, timeline
+    return timeline
 
-        
+
+
+@login_required
+@render_to('main/home.html')
+def home(request):
+    return HttpResponseRedirect(reverse('user_timeline',
+                                        args=[request.user.odesk_id])) 
+
+@login_required
+@render_to('main/home.html')
+def timeline(request, user_id=None, team_id=None):
+    
+    
+    timeline = get_timeline(request, user_id, team_id)        
     
     if request.method == 'POST':
         form = MessageForm(request.POST)
@@ -52,8 +59,23 @@ def timeline(request, user_id=None, team_id=None):
 
     return {'form': form, 'timeline': timeline}
 
+@login_required
 def post(request):
-    pass
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            message = Message(sender=request.user, text=data['text'])
+            if 'team_name' in data:
+                #TODO: Check access
+                message.to_team = Team.objects.get(name=data['team_name'])
+            message.save()
+            if request.is_ajax():
+                return HttpResponse('OK')
+            redirect = data.get('redirect', '/')
+            return HttpResponseRedirect(redirect) 
+    else:
+        return HttpResponseRedirect('/') 
 
 
 @login_required
@@ -62,6 +84,15 @@ def teams(request):
     client = RequestClient(request)
     teamrooms = client.team.get_teamrooms()
     return {'teamrooms': teamrooms}
+
+
+@login_required
+@render_to('main/team.html')
+def teamroom(request, team_id):
+    team, timeline = get_timeline(request, team_id = team_id) 
+    form = MessageForm()
+    return {'team':team, 'timeline': timeline, 'form': form, 
+            'url': request.get_full_path()}
 
 
 @login_required
