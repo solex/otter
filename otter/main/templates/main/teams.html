@@ -4,8 +4,20 @@
     
     <h2>Your teams</h2>
     <ul>
-    {% for team in teamrooms %}
+    {% for team, following in teamrooms %}
         <li><a href="{% url team_timeline team.name %}">{{ team.title }}</a></li>
+        <form action="{% url follow %}" method="post">
+            <input type="hidden" name="team_name" value="{{ team.name }}"/>
+            <input type="hidden" name="redirect" value="{{ url }}"/>
+            {% if following %}
+                <input type="hidden" name="follow" value="0"/>
+                <button type="submit">Remove</button> from favorites
+            {% else %}
+                <input type="hidden" name="follow" value="1"/>
+                <button type="submit">Add</button> to favorites
+            {% endif %}
+            {% csrf_token %}
+        </form>
     {% endfor %}
     </ul>
 

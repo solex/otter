@@ -5,8 +5,8 @@ from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
 from django_odesk.core.clients import RequestClient
 
-from otter.main.models import User, Team, Message, FavTeam
-from otter.main.forms import MessageForm
+from otter.main.models import User, Team, Message, FavTeam, FavUser
+from otter.main.forms import MessageForm, FollowForm
 
 
 def get_timeline(request, team_id=None, user_id=None, private=None):
@@ -67,7 +67,7 @@ def post(request):
         if form.is_valid():
             data = form.cleaned_data
             message = Message(sender=request.user, text=data['text'])
-            if 'team_name' in data:
+            if data['team_name']:
                 #TODO: Check access
                 message.to_team = Team.objects.get(name=data['team_name'])
             message.save()
@@ -78,6 +78,30 @@ def post(request):
     else:
         return HttpResponseRedirect('/') 
 
+@login_required
+def follow(request):
+    if request.method == 'POST':
+        form = FollowForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            if data['team_name']:
+                team = Team.objects.get(name=data['team_name'])
+                fav_team, c = FavTeam.objects.get_or_create(user=request.user,
+                                                            team = team)
+                if not data['follow']:
+                    fav_team.delete()
+            elif data['user_name']:
+                user = User.objects.get(username=data['user_name'])
+                fav_user, c = FavUser.objects.get_or_create(user=request.user,
+                                                           follow = user)
+                if not data['follow']:
+                    fav_user.delete()
+            if request.is_ajax():
+                return HttpResponse('OK')
+            redirect = data.get('redirect', '/')
+            return HttpResponseRedirect(redirect) 
+    else:
+        return HttpResponseRedirect('/') 
 
 @login_required
 @render_to('main/teams.html')
@@ -88,8 +112,13 @@ def teams(request):
         title = "%(company_name)s > %(name)s" % team_data
         team, created = Team.objects.get_or_create(name = team_data['id'], 
                                         defaults = {'title': title})
-        teamrooms.append(team)
-    return {'teamrooms': teamrooms}
+        try:
+            FavTeam.objects.get(user=request.user, team=team)
+            following = True
+        except FavTeam.DoesNotExist:
+            following = False
+        teamrooms.append((team,following))
+    return {'teamrooms': teamrooms, 'url': request.get_full_path()}
 
 
 @login_required
@@ -101,6 +130,21 @@ def teamroom(request, team_id):
     form = MessageForm()
     return {'team':team, 'timeline': timeline, 'form': form, 
             'url': request.get_full_path()}
+
+@login_required
+@render_to('main/public.html')
+def public(request, user_id):
+    username = user_id + '@odesk.com'
+    user = User.objects.get(username = username)
+    timeline = get_timeline(request, user_id = user_id) 
+    try:
+        FavUser.objects.get(user=request.user, follow=user)
+        following = True
+    except FavUser.DoesNotExist:
+        following = False
+    form = MessageForm()
+    return {'owner':user, 'timeline': timeline, 'form': form, 
+            'url': request.get_full_path(), 'following': following}
 
 
 @login_required

@@ -1,0 +1,24 @@
+{% extends "main/base.html" %}
+
+{% block body %}
+    
+    <h2>{{ team.title }}</h2>
+
+    {% for message in timeline %}
+    <div class="message">
+        <div class=""> 
+            <a href="{% url user_timeline message.sender.odesk_id %}">{{ message.sender }}</a>  {{ message.text }}
+        </div>
+        <div>
+            {{ message.timestamp|date:"H:m" }}
+        </div>
+    </div>
+    {% endfor %}
+
+    <form action="{% url post %}" method="post">
+        {{ form.text }}
+        <input type="hidden" name="redirect" value="{{ url }}"/>
+        <button type="submit">Send</button>
+        {% csrf_token %}
+    </form>
+{% endblock %}

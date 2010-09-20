@@ -4,7 +4,7 @@
     
     <p>Welcome!</p>
 
-    <h3>Teams</h3>
+    <h3>Your teamroms</h3>
     {% if user.favteam_set.all %}
     <ul>
         {% for f in user.favteam_set.all %}
@@ -12,6 +12,7 @@
         {% endfor %}
     </ul>
     {% endif %}
+    <p><a href="{% url team_list %}">Full list</a></p>
 
     {% for message in timeline %}
     <div class="message">
