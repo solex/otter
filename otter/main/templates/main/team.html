@@ -6,7 +6,12 @@
 
     {% for message in timeline %}
     <div class="message">
-        {{ message.timestamp|date:"H:m" }} {{ message.sender }} / {{ message.text }}
+        <div class=""> 
+            <a href="{% url user_timeline message.sender.odesk_id %}">{{ message.sender }}</a>  {{ message.text }}
+        </div>
+        <div>
+            {{ message.timestamp|date:"H:m" }}
+        </div>
     </div>
     {% endfor %}
 

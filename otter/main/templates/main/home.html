@@ -4,6 +4,15 @@
     
     <p>Welcome!</p>
 
+    <h3>Teams</h3>
+    {% if user.favteam_set.all %}
+    <ul>
+        {% for f in user.favteam_set.all %}
+        <li><a href="{% url team_timeline f.team.name %}">{{ f.team.title }}</a></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
     {% for message in timeline %}
     <div class="message">
         {{ message.timestamp|date:"H:m" }} / {{ message.text }}

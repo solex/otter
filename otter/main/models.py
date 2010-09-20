@@ -40,3 +40,12 @@ class Message(models.Model):
 
     #TODO: tags, priority, mentioned
 
+class FavTeam(models.Model):
+    
+    user = models.ForeignKey(User)
+    team = models.ForeignKey(Team)
+
+class FavUser(models.Model):
+    
+    user = models.ForeignKey(User, related_name='following')
+    follow = models.ForeignKey(User, related_name='followers')

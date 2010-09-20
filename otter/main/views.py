@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from annoying.decorators import render_to
 from django_odesk.core.clients import RequestClient
 
-from otter.main.models import User, Team, Message
+from otter.main.models import User, Team, Message, FavTeam
 from otter.main.forms import MessageForm
 
 
@@ -37,8 +37,9 @@ def get_timeline(request, team_id=None, user_id=None, private=None):
 @login_required
 @render_to('main/home.html')
 def home(request):
-    return HttpResponseRedirect(reverse('user_timeline',
-                                        args=[request.user.odesk_id])) 
+    timeline = []
+    form = MessageForm()
+    return {'form': form, 'timeline': timeline}
 
 @login_required
 @render_to('main/home.html')
@@ -82,7 +83,12 @@ def post(request):
 @render_to('main/teams.html')
 def teams(request):
     client = RequestClient(request)
-    teamrooms = client.team.get_teamrooms()
+    teamrooms = []
+    for team_data in client.team.get_teamrooms(): #TODO: Session or cache?
+        title = "%(company_name)s > %(name)s" % team_data
+        team, created = Team.objects.get_or_create(name = team_data['id'], 
+                                        defaults = {'title': title})
+        teamrooms.append(team)
     return {'teamrooms': teamrooms}
 
 
@@ -90,6 +96,8 @@ def teams(request):
 @render_to('main/team.html')
 def teamroom(request, team_id):
     team, timeline = get_timeline(request, team_id = team_id) 
+    fav_team, created = FavTeam.objects.get_or_create(user = request.user,
+                                                      team = team)
     form = MessageForm()
     return {'team':team, 'timeline': timeline, 'form': form, 
             'url': request.get_full_path()}
