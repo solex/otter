@@ -2,6 +2,7 @@
 
 {% block top_area %}
     <h2 class="user">{{ owner }}</h2>
+    <p>Public timeline</p>
     {% ifnotequal user owner %}
         <form action="{% url follow %}" method="post">
             <input type="hidden" name="user_name" value="{{ owner.username }}"/>
@@ -20,22 +21,27 @@
 
 {% block body %}
     
-
-    {% for message in timeline %}
-    <div class="message">
-        <div class=""> 
-            <a href="{% url user_timeline message.sender.odesk_id %}">{{ message.sender }}</a>  {{ message.text }}
-        </div>
-        <div>
-            {{ message.timestamp|date:"H:m" }}
-        </div>
-    </div>
-    {% endfor %}
-
+    <div>
     <form action="{% url post %}" method="post">
-        {{ form.text }}
+        <p><textarea name="text"></textarea></p>
         <input type="hidden" name="redirect" value="{{ url }}"/>
-        <button type="submit">Send</button>
+        <p><button type="submit">Send</button></p>
         {% csrf_token %}
+        <br/>
     </form>
+    </div>
+
+    <div class="timeline">
+        {% for message in timeline %}
+        <div class="message">
+            <div class=""> 
+                <a href="{% url user_timeline message.sender.odesk_id %}">{{ message.sender }}</a>  {{ message.text }}
+            </div>
+            <div>
+                {{ message.timestamp|date:"H:m" }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
 {% endblock %}

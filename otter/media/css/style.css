@@ -23,7 +23,18 @@
 }
 
 .top_area {
-    background: #d2d2dd;
+    background: #fff6f0;
+    height: 140px;
+    padding: 1em;
+}
+
+.main {
+}
+
+.main textarea {
+    height: 6.5em;
+    padding: 0;
+    width: 100%;
 }
 
 

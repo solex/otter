@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 
 from annoying.decorators import render_to
 from django_odesk.core.clients import RequestClient
@@ -37,7 +38,10 @@ def get_timeline(request, team_id=None, user_id=None, private=None):
 @login_required
 @render_to('main/home.html')
 def home(request):
-    timeline = []
+    query = Q(to_team__favteam__user = request.user) |\
+    (Q(sender__followers__user = request.user) & Q(to_user__isnull = True) &Q(to_team__isnull=True)) |\
+    (Q(sender = request.user) & Q(to_user__isnull = True) & Q(to_team__isnull=True))
+    timeline = Message.objects.filter(query)
     form = MessageForm()
     return {'form': form, 'timeline': timeline}
 
@@ -128,7 +132,7 @@ def teamroom(request, team_id):
     fav_team, created = FavTeam.objects.get_or_create(user = request.user,
                                                       team = team)
     form = MessageForm()
-    return {'team':team, 'timeline': timeline, 'form': form, 
+    return {'team':team, 'timeline': timeline, 'form': form, 'following': True,
             'url': request.get_full_path()}
 
 @login_required

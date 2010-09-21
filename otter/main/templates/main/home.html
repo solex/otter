@@ -1,10 +1,8 @@
 {% extends "main/base.html" %}
 
-{% block body %}
-    
-    <p>Welcome!</p>
 
-    <h3>Your teamroms</h3>
+{% block top_area %}
+    <h2>Your teamroms</h2>
     {% if user.favteam_set.all %}
     <ul>
         {% for f in user.favteam_set.all %}
@@ -13,16 +11,36 @@
     </ul>
     {% endif %}
     <p><a href="{% url team_list %}">Full list</a></p>
+{% endblock %}
 
-    {% for message in timeline %}
-    <div class="message">
-        {{ message.timestamp|date:"H:m" }} / {{ message.text }}
-    </div>
-    {% endfor %}
 
-    <form action="" method="post">
-        {{ form.as_p }}
-        <button type="submit">Send</button>
+{% block body %}
+    
+
+    <div>
+    <form action="{% url post %}" method="post">
+        <p><textarea name="text"></textarea></p>
+        <input type="hidden" name="redirect" value="{{ url }}"/>
+        <p><button type="submit">Send</button></p>
         {% csrf_token %}
+        <br/>
     </form>
+    </div>
+
+    <div class="timeline">
+        {% for message in timeline %}
+        <div class="message">
+            <div class=""> 
+                <a href="{% url user_timeline message.sender.odesk_id %}">{{ message.sender }}</a> 
+                {% if message.to_team %}
+                <em>to <a href="{% url team_timeline message.to_team.name %}">{{ message.to_team.name }}</a> </em>
+                {% endif %}
+                {{ message.text }}
+            </div>
+            <div>
+                {{ message.timestamp|date:"H:m" }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 {% endblock %}

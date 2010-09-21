@@ -23,6 +23,7 @@
                         <h2 class="tagline">Microblogging for oDesk</h2>
                     </div>
                     <div class="prefix-6"> 
+                        <div class="top_area">
                         <div>
                             {% if user.is_authenticated %}
                             <p style="text-align: right">{{ user.get_full_name }} ({{ user.username }}) | <a href="{% url django.contrib.auth.views.logout %}">Logout</a></p>
@@ -30,7 +31,6 @@
                             <p style="text-align: right"><a href="{% url django.contrib.auth.views.login %}">Log in</a></p>
                             {% endif %}
                         </div>
-                        <div class="top_area">
                         {% block top_area %}
                         {% endblock %}
                         </div>
