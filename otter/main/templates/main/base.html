@@ -3,37 +3,41 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
         <title>Otter</title>
-        <link rel="stylesheet" type="text/css" media="all" href="{{ MEDIA_URL }}css/reset.css" />
-        <link rel="stylesheet" type="text/css" media="all" href="{{ MEDIA_URL }}css/text.css" />
-        <link rel="stylesheet" type="text/css" media="all" href="{{ MEDIA_URL }}css/960.css" />
-        <link rel="stylesheet" type="text/css" media="all" href="{{ MEDIA_URL }}css/layout.css" />
-        <link rel="stylesheet" type="text/css" media="all" href="{{ MEDIA_URL }}css/default.css" />
-        <!--[if IE 6]><link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/ie6.css" media="screen" /><![endif]-->
-        <!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}/css/ie.css" media="screen" /><![endif]-->
+	<link rel="stylesheet" href="{{ MEDIA_URL }}css/screen.css" type="text/css" media="screen, projection" /> 
+        <link rel="stylesheet" href="{{ MEDIA_URL }}css/print.css" type="text/css" media="print" /> 
+	<!--[if IE]>
+		<link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen, projection" />
+	<![endif]--> 
+        <link rel="stylesheet" href="{{ MEDIA_URL }}css/style.css" type="text/css" media="screen, projection" /> 
+
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
         {% block extra_head %}
         {% endblock %}
     </head>
     <body>
-        <div class="container_12 layout">
-            <div class="grid_7">
-                <h1>Otter</h1>
-                <h2>Microblogging for oDesk</h2>
+        <div class="container">
+        <!--div class="container showgrid"-->
+            <div class="span-16 prefix-4">
+                <div class="header container">
+                    <div class="span-8 branding"> 
+                        <h1 class="logo2">Otter</h1>
+                        <h2 class="tagline">Microblogging for oDesk</h2>
+                    </div>
+                    <div class="span-8"> 
+                    {% if user.is_authenticated %}
+                        <p style="text-align: right">{{ user.get_full_name }} ({{ user.username }}) | <a href="{% url django.contrib.auth.views.logout %}">Logout</a></p>
+                    {% else %}
+                        <p style="text-align: right"><a href="{% url django.contrib.auth.views.login %}">Log in</a></p>
+                    {% endif %}
+                    </div>
+                </div>
+                <div class="main">
+                {% block body %}
+                {% endblock %}
+                </div>
+                <div class="footer">&copy; 2010 oDesk Corporation</div>
+                </div>
             </div>
-            <div class="grid_4" >
-                {% if user.is_authenticated %}
-                    <p style="text-align: right">{{ user.get_full_name }} ({{ user.username }}) | <a href="{% url django.contrib.auth.views.logout %}">Logout</a></p>
-                {% else %}
-                    <p style="text-align: right"><a href="{% url django.contrib.auth.views.login %}">Log in</a></p>
-                {% endif %}
-            </div>
-            <div class="clear"></div>
-            {% block body %}
-            {% endblock %}
-            <div class="grid_12">
-                <p>&copy; 2010 oDesk Corporation</p>
-            </div>
-            <div class="clear"></div>
         </div>
     </body>
 </html>

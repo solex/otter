@@ -31,6 +31,9 @@ class Message(models.Model):
 
     #TODO: Update messages with MC client
 
+    class Meta:
+        ordering = ('-timestamp',)
+
     sender = models.ForeignKey(User, related_name='messages_sent')
     text = models.TextField()
     to_user = models.ForeignKey(User, blank=True, null=True,
