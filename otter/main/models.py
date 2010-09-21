@@ -43,6 +43,9 @@ class Message(models.Model):
 
     #TODO: tags, priority, mentioned
 
+    def __unicode__(self):
+        return "%s : %s" % (self.sender, self.text)
+
 class FavTeam(models.Model):
     
     user = models.ForeignKey(User)

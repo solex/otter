@@ -1,20 +1,25 @@
 {% extends "main/base.html" %}
 
+{% block top_area %}
+    <h2 class="user">{{ owner }}</h2>
+    {% ifnotequal user owner %}
+        <form action="{% url follow %}" method="post">
+            <input type="hidden" name="user_name" value="{{ owner.username }}"/>
+            <input type="hidden" name="redirect" value="{{ url }}"/>
+            {% if following %}
+                <input type="hidden" name="follow" value="0"/>
+                You are following this user. <button type="submit">Unfollow</button>
+            {% else %}
+                <input type="hidden" name="follow" value="1"/>
+                <button type="submit">Follow</button> this user.
+            {% endif %}
+            {% csrf_token %}
+        </form>
+    {% endifnotequal %}
+{% endblock %}
+
 {% block body %}
     
-    <h2>{{ owner }}</h2>
-    <form action="{% url follow %}" method="post">
-        <input type="hidden" name="user_name" value="{{ owner.username }}"/>
-        <input type="hidden" name="redirect" value="{{ url }}"/>
-        {% if following %}
-            <input type="hidden" name="follow" value="0"/>
-            You are following this user. <button type="submit">Unfollow</button>
-        {% else %}
-            <input type="hidden" name="follow" value="1"/>
-            <button type="submit">Follow</button> this user.
-        {% endif %}
-        {% csrf_token %}
-    </form>
 
     {% for message in timeline %}
     <div class="message">

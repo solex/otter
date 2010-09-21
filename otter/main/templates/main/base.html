@@ -16,26 +16,31 @@
     </head>
     <body>
         <div class="container">
-        <!--div class="container showgrid"-->
             <div class="span-16 prefix-4">
-                <div class="header container">
-                    <div class="span-8 branding"> 
+                <div class="header span-16">
+                    <div class="span-4 branding"> 
                         <h1 class="logo2">Otter</h1>
                         <h2 class="tagline">Microblogging for oDesk</h2>
                     </div>
-                    <div class="span-8"> 
-                    {% if user.is_authenticated %}
-                        <p style="text-align: right">{{ user.get_full_name }} ({{ user.username }}) | <a href="{% url django.contrib.auth.views.logout %}">Logout</a></p>
-                    {% else %}
-                        <p style="text-align: right"><a href="{% url django.contrib.auth.views.login %}">Log in</a></p>
-                    {% endif %}
+                    <div class="prefix-6"> 
+                        <div>
+                            {% if user.is_authenticated %}
+                            <p style="text-align: right">{{ user.get_full_name }} ({{ user.username }}) | <a href="{% url django.contrib.auth.views.logout %}">Logout</a></p>
+                            {% else %}
+                            <p style="text-align: right"><a href="{% url django.contrib.auth.views.login %}">Log in</a></p>
+                            {% endif %}
+                        </div>
+                        <div class="top_area">
+                        {% block top_area %}
+                        {% endblock %}
+                        </div>
                     </div>
                 </div>
-                <div class="main">
+                <div class="main span-16">
                 {% block body %}
                 {% endblock %}
                 </div>
-                <div class="footer">&copy; 2010 oDesk Corporation</div>
+                <div class="footer span-16">&copy; 2010 oDesk Corporation</div>
                 </div>
             </div>
         </div>

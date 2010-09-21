@@ -11,10 +11,18 @@
 /**************************************/
 
 .main {
-    /*background: #d2d2dd; */
+    background: #f2f2ff; 
 }
 
 .timeline {
+  /*  background: #d2d2dd; */
+}
+
+.message {
+    border-top: 1px #ccc solid;
+}
+
+.top_area {
     background: #d2d2dd;
 }
 
@@ -46,6 +54,14 @@ h1.logo2 {
 
 h2.tagline {
     display: none;
+}
+
+.top_area h2 {
+    font-size: 1.3em; 
+}
+
+h2.team {
+    font-style: italic;
 }
 
 
